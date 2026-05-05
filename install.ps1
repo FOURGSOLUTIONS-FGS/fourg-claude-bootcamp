@@ -5,16 +5,49 @@
 .DESCRIPTION
     Instala Node LTS, Python 3.12, Git, VS Code (opcional), Claude Code,
     y crea un workspace estructurado tipo FourG con CLAUDE.md personalizado.
+.PARAMETER Express
+    Modo desatendido: usa todos los defaults / params sin preguntar nada.
+    Ideal para CI o instalaciones masivas.
+.PARAMETER Workspace
+    Path donde crear el workspace. Default: C:\TRABAJOS
+.PARAMETER UserName
+    Nombre del usuario para el CLAUDE.md.
+.PARAMETER Company
+    Empresa o marca personal.
+.PARAMETER Email
+    Email del usuario.
+.PARAMETER VSCode
+    Si instalar VS Code. Default: $true.
+.PARAMETER IaC
+    Si instalar Terraform + AWS CLI. Default: $false.
+.PARAMETER SkipLogin
+    No lanzar `claude` al final para login (util en CI).
+.EXAMPLE
+    .\install.ps1
+    # Modo interactivo (te pregunta todo)
+.EXAMPLE
+    .\install.ps1 -Express -UserName "Juan Perez" -Company "JP" -Email "juan@jp.com"
+    # Modo express con datos minimos
 .NOTES
     Autor:   Adrian Garzon - FourG Solutions
     Email:   four4gsolutions@gmail.com
     Web:     www.fourgsolutions.com
-    Version: 1.0.0
+    Version: 1.1.0
     Fecha:   2026-05-04
 #>
+param(
+    [switch]$Express,
+    [string]$Workspace = '',
+    [string]$UserName  = '',
+    [string]$Company   = '',
+    [string]$Email     = '',
+    [Nullable[bool]]$VSCode    = $null,
+    [Nullable[bool]]$IaC       = $null,
+    [switch]$SkipLogin
+)
 
 $ErrorActionPreference = 'Stop'
-$Script:KitVersion = '1.0.0'
+$Script:KitVersion = '1.1.0'
 $Script:KitRoot = $PSScriptRoot
 
 # ---------------------------------------------------------------------------
@@ -135,13 +168,16 @@ function Copy-Scaffold {
 # ---------------------------------------------------------------------------
 Write-Banner
 
-# 1. Admin check
-if (-not (Test-Admin)) {
+# 1. Admin check (skip en CI: el runner ya tiene permisos suficientes)
+if ($env:CI) {
+    Write-Ok 'CI detectado ($env:CI definido) - skip admin check'
+} elseif (-not (Test-Admin)) {
     Write-Fail 'Este script necesita PowerShell como Administrador.'
     Write-Info  'Cerra esta ventana, abri PowerShell con boton derecho > "Ejecutar como administrador" y volve a correr.'
     exit 1
+} else {
+    Write-Ok 'Corriendo como Administrador'
 }
-Write-Ok 'Corriendo como Administrador'
 
 # 2. Winget check
 if (-not (Test-Winget)) {
@@ -153,12 +189,23 @@ Write-Ok 'winget disponible'
 # 3. Inputs del usuario
 Write-Host ''
 Write-Step 'Configuracion del workspace'
-$workspace = Read-Default 'Donde queres crear el workspace?' 'C:\TRABAJOS'
-$userName  = Read-Default 'Tu nombre completo' 'Mi Nombre'
-$company   = Read-Default 'Tu empresa o marca personal' 'Mi Empresa'
-$email     = Read-Default 'Tu email' 'mi@email.com'
-$installVS = Read-YesNo  'Instalar VS Code?' $true
-$installIaC = Read-YesNo 'Instalar Terraform + AWS CLI (modulo Infrastructure as Code)?' $false
+
+if ($Express) {
+    Write-Ok 'Modo Express: usando params/defaults sin preguntar'
+    $workspace  = if ($Workspace) { $Workspace } else { 'C:\TRABAJOS' }
+    $userName   = if ($UserName)  { $UserName }  else { 'Bootcamp User' }
+    $company    = if ($Company)   { $Company }   else { 'FourG Solutions' }
+    $email      = if ($Email)     { $Email }     else { 'user@example.com' }
+    $installVS  = if ($null -ne $VSCode) { $VSCode } else { $true }
+    $installIaC = if ($null -ne $IaC)    { $IaC }    else { $false }
+} else {
+    $workspace  = if ($Workspace) { $Workspace } else { Read-Default 'Donde queres crear el workspace?' 'C:\TRABAJOS' }
+    $userName   = if ($UserName)  { $UserName }  else { Read-Default 'Tu nombre completo' 'Mi Nombre' }
+    $company    = if ($Company)   { $Company }   else { Read-Default 'Tu empresa o marca personal' 'Mi Empresa' }
+    $email      = if ($Email)     { $Email }     else { Read-Default 'Tu email' 'mi@email.com' }
+    $installVS  = if ($null -ne $VSCode) { $VSCode } else { Read-YesNo 'Instalar VS Code?' $true }
+    $installIaC = if ($null -ne $IaC)    { $IaC }    else { Read-YesNo 'Instalar Terraform + AWS CLI (modulo Infrastructure as Code)?' $false }
+}
 
 Write-Host ''
 Write-Info "Workspace : $workspace"
@@ -167,9 +214,12 @@ Write-Info "Empresa   : $company"
 Write-Info "VS Code   : $(if ($installVS) { 'si' } else { 'no' })"
 Write-Info "IaC       : $(if ($installIaC) { 'si (Terraform + AWS CLI)' } else { 'no (lo podes instalar despues)' })"
 Write-Host ''
-if (-not (Read-YesNo 'Confirmar y continuar?' $true)) {
-    Write-Warn 'Cancelado por el usuario.'
-    exit 0
+
+if (-not $Express) {
+    if (-not (Read-YesNo 'Confirmar y continuar?' $true)) {
+        Write-Warn 'Cancelado por el usuario.'
+        exit 0
+    }
 }
 
 # 4. Instalar runtimes
@@ -239,20 +289,25 @@ Copy-Scaffold -Source $scaffoldSrc -Target $workspace -Vars $vars
 Write-Ok "Scaffold copiado y CLAUDE.md personalizado"
 
 # 7. Login Claude Code
-Write-Host ''
-Write-Step 'Autenticando Claude Code con tu cuenta'
-Write-Info  'Se va a abrir tu navegador para login. Usa tu cuenta de Anthropic (gratis o paga).'
-Write-Info  'Si todavia no tenes cuenta, registrate en https://console.anthropic.com'
-Write-Host ''
-$doLogin = Read-YesNo 'Lanzar `claude` ahora para hacer login?' $true
-if ($doLogin) {
-    Push-Location $workspace
-    try {
-        & claude
-    } catch {
-        Write-Warn "No se pudo lanzar claude desde aca. Cerra y abri una nueva PowerShell, ejecuta: cd $workspace && claude"
+if ($SkipLogin -or $Express) {
+    Write-Host ''
+    Write-Info 'Login skippeado. Para autenticarte despues:  cd $workspace ; claude'
+} else {
+    Write-Host ''
+    Write-Step 'Autenticando Claude Code con tu cuenta'
+    Write-Info  'Se va a abrir tu navegador para login. Usa tu cuenta de Anthropic (gratis o paga).'
+    Write-Info  'Si todavia no tenes cuenta, registrate en https://console.anthropic.com'
+    Write-Host ''
+    $doLogin = Read-YesNo 'Lanzar `claude` ahora para hacer login?' $true
+    if ($doLogin) {
+        Push-Location $workspace
+        try {
+            & claude
+        } catch {
+            Write-Warn "No se pudo lanzar claude desde aca. Cerra y abri una nueva PowerShell, ejecuta: cd $workspace && claude"
+        }
+        Pop-Location
     }
-    Pop-Location
 }
 
 # 8. Verificacion final

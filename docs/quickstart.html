@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>FourG Claude Code Bootcamp - Quickstart</title>
+<style>
+  @page { size: A4; margin: 1.2cm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    color: #1a1a1a; line-height: 1.45; padding: 2rem 2.5rem; max-width: 820px; margin: 0 auto;
+    background: #fafafa;
+  }
+  @media print { body { background: #fff; padding: 0; } .no-print { display: none; } }
+  header {
+    border-bottom: 3px solid #d4a574; padding-bottom: 1rem; margin-bottom: 1.5rem;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .brand { font-family: "Cormorant Garamond", Georgia, serif; }
+  .brand h1 { font-size: 2.2rem; font-weight: 600; letter-spacing: -0.02em; color: #2a2520; }
+  .brand .tag { font-size: 0.85rem; color: #8a7a65; font-style: italic; margin-top: 0.2rem; }
+  .meta { text-align: right; font-size: 0.75rem; color: #6a6a6a; }
+  .meta strong { color: #d4a574; display: block; font-size: 0.9rem; margin-bottom: 0.2rem; }
+
+  .grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+
+  .steps ol { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step; position: relative; padding-left: 2.4rem; margin-bottom: 1rem;
+    font-size: 0.92rem;
+  }
+  .steps li::before {
+    content: counter(step); position: absolute; left: 0; top: -0.1rem;
+    width: 1.7rem; height: 1.7rem; background: #2a2520; color: #d4a574;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+  .steps li strong { display: block; color: #2a2520; margin-bottom: 0.2rem; }
+
+  code, pre {
+    font-family: "Fira Code", "Cascadia Code", Consolas, monospace;
+    background: #2a2520; color: #f5e6c8; padding: 0.6rem 0.8rem;
+    border-radius: 4px; font-size: 0.78rem; display: block; overflow-x: auto;
+    margin: 0.4rem 0; line-height: 1.5;
+  }
+  code.inline { display: inline; padding: 0.1rem 0.3rem; font-size: 0.85rem; }
+
+  .qr-card {
+    background: #fff; border: 1px solid #e0d4be; border-radius: 6px;
+    padding: 1rem; text-align: center;
+  }
+  .qr-card img { width: 100%; max-width: 220px; height: auto; }
+  .qr-card .label { font-size: 0.78rem; color: #6a6a6a; margin-top: 0.5rem; }
+  .qr-card .url { font-family: "Fira Code", monospace; font-size: 0.65rem; color: #8a7a65; word-break: break-all; margin-top: 0.3rem; }
+
+  .info-box {
+    background: #fff; border-left: 3px solid #d4a574; padding: 0.7rem 1rem;
+    margin: 1rem 0; font-size: 0.82rem; border-radius: 0 4px 4px 0;
+  }
+  .info-box strong { color: #2a2520; }
+
+  footer {
+    margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e0d4be;
+    display: flex; justify-content: space-between; font-size: 0.7rem; color: #6a6a6a;
+  }
+
+  .print-btn {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    background: #2a2520; color: #d4a574; border: none; padding: 0.7rem 1.2rem;
+    border-radius: 4px; font-size: 0.85rem; cursor: pointer; font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .print-btn:hover { background: #3a3530; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Claude Code Bootcamp</h1>
+    <div class="tag">Construimos negocios reales — FourG Solutions</div>
+  </div>
+  <div class="meta">
+    <strong>Quickstart</strong>
+    v1.1 · Windows<br>
+    fourgsolutions.com
+  </div>
+</header>
+
+<div class="grid">
+
+  <div class="steps">
+    <ol>
+      <li>
+        <strong>Crear cuenta de Anthropic</strong>
+        <span>Gratis en <code class="inline">console.anthropic.com</code> o <code class="inline">claude.ai</code>. La vas a usar al final.</span>
+      </li>
+      <li>
+        <strong>Abrir PowerShell como Administrador</strong>
+        <span>Tecla Windows → escribir "powershell" → click derecho → "Ejecutar como administrador".</span>
+      </li>
+      <li>
+        <strong>Pegar y dar Enter</strong>
+        <code>irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1 | iex</code>
+        <span style="font-size: 0.78rem; color: #6a6a6a;">(O escaneá el QR de la derecha y pega lo que te muestra)</span>
+      </li>
+      <li>
+        <strong>Responder las preguntas</strong>
+        <span>Ruta del workspace · tu nombre · empresa · email · si querés VS Code · si querés IaC.</span>
+      </li>
+      <li>
+        <strong>Esperar ~5 min</strong>
+        <span>Instala Node, Python, Git, VS Code, Claude Code. Al final abre el navegador para login.</span>
+      </li>
+      <li>
+        <strong>Cerrar y reabrir PowerShell</strong>
+        <span>Para que el PATH se refresque. Después:</span>
+        <code>cd C:\TRABAJOS
+claude</code>
+      </li>
+    </ol>
+
+    <div class="info-box">
+      <strong>Modo Express</strong> — sin preguntas, todo defaults:
+      <code style="margin-top: 0.3rem;">&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1))) -Express -UserName "Tu Nombre" -Email "tu@mail.com"</code>
+    </div>
+  </div>
+
+  <aside>
+    <div class="qr-card">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&amp;data=https%3A%2F%2Fraw.githubusercontent.com%2FFOURGSOLUTIONS-FGS%2Ffourg-claude-bootcamp%2Fmain%2Fbootstrap.ps1&amp;margin=10" alt="QR al bootstrap.ps1">
+      <div class="label">Escaneá para abrir el script</div>
+      <div class="url">raw.githubusercontent.com/<br>FOURGSOLUTIONS-FGS/<br>fourg-claude-bootcamp/<br>main/bootstrap.ps1</div>
+    </div>
+
+    <div class="info-box" style="margin-top: 1rem;">
+      <strong>Si algo falla</strong><br>
+      <span style="font-size: 0.78rem;">
+        • <em>winget no se reconoce</em> → Microsoft Store → "App Installer"<br>
+        • <em>scripts disabled</em> → <code class="inline">Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code><br>
+        • <em>SSL fail</em> → <code class="inline">[Net.ServicePointManager]::SecurityProtocol = 'Tls12'</code><br>
+        • <em>claude no se reconoce</em> → cerrá y abrí PowerShell de nuevo
+      </span>
+    </div>
+
+    <div class="info-box">
+      <strong>Soporte</strong><br>
+      <span style="font-size: 0.78rem;">
+        Repo: <code class="inline">github.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp</code><br>
+        Mail: <code class="inline">four4gsolutions@gmail.com</code>
+      </span>
+    </div>
+  </aside>
+
+</div>
+
+<footer>
+  <span>FourG Solutions · 2026</span>
+  <span>Imprimí esta hoja con Ctrl+P → Guardar como PDF</span>
+</footer>
+
+<button class="print-btn no-print" onclick="window.print()">Imprimir / PDF</button>
+
+</body>
+</html>

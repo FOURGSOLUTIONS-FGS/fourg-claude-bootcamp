@@ -1,0 +1,223 @@
+name: Test install
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # Lint: syntax check de todos los .ps1 y .sh sin ejecutarlos
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bash syntax check (.sh)
+        run: |
+          set -e
+          fail=0
+          while IFS= read -r f; do
+            if ! bash -n "$f"; then
+              echo "::error file=$f::syntax error"
+              fail=1
+            else
+              echo "OK $f"
+            fi
+          done < <(find . -name '*.sh' -not -path './.git/*')
+          exit $fail
+
+      - name: Install PowerShell on ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https software-properties-common
+          source /etc/os-release
+          wget -q "https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb"
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install -y powershell
+
+      - name: PowerShell syntax check (.ps1)
+        shell: pwsh
+        run: |
+          $fail = 0
+          Get-ChildItem -Recurse -Filter '*.ps1' | Where-Object { $_.FullName -notmatch '\\.git\\' } | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              Write-Host "::error file=$($_.FullName)::$($errors[0].Message)"
+              $fail = 1
+            } else {
+              Write-Host "OK $($_.Name)"
+            }
+          }
+          exit $fail
+
+      - name: Verify .ps1 files have UTF-8 BOM
+        shell: pwsh
+        run: |
+          $fail = 0
+          Get-ChildItem -Recurse -Filter '*.ps1' | Where-Object { $_.FullName -notmatch '\\.git\\' } | ForEach-Object {
+            $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
+            if ($bytes.Length -lt 3 -or $bytes[0] -ne 0xEF -or $bytes[1] -ne 0xBB -or $bytes[2] -ne 0xBF) {
+              Write-Host "::error file=$($_.FullName)::Missing UTF-8 BOM (regla del workspace)"
+              $fail = 1
+            } else {
+              Write-Host "OK BOM $($_.Name)"
+            }
+          }
+          exit $fail
+
+      - name: Scan for leaked secrets
+        run: |
+          set -e
+          patterns='ghp_|gho_|ghu_|ghs_|ghr_|AKIA[0-9A-Z]{16}|aws_secret_access_key\s*=\s*[A-Za-z0-9/+=]{20,}'
+          if grep -rEn "$patterns" --include='*.ps1' --include='*.sh' --include='*.md' --include='*.yml' --include='*.yaml' --include='*.json' --include='*.tf' .; then
+            echo "::error::Leaked secret detected"
+            exit 1
+          fi
+          echo "OK no secrets"
+
+  # ---------------------------------------------------------------------------
+  # Test install on Windows
+  # ---------------------------------------------------------------------------
+  test-windows:
+    name: Test install (windows)
+    runs-on: windows-latest
+    needs: lint
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install.ps1 in Express mode
+        shell: pwsh
+        run: |
+          $ws = "$env:RUNNER_TEMP\test-workspace"
+          .\install.ps1 -Express `
+            -Workspace $ws `
+            -UserName 'CI Tester' `
+            -Company 'CI' `
+            -Email 'ci@test.com' `
+            -VSCode:$false `
+            -IaC:$false `
+            -SkipLogin
+          if ($LASTEXITCODE -ne 0) { throw "install.ps1 fallo (exit $LASTEXITCODE)" }
+
+      - name: Verify workspace structure
+        shell: pwsh
+        run: |
+          $ws = "$env:RUNNER_TEMP\test-workspace"
+          $expected = @(
+            'CLAUDE.md',
+            'README.md',
+            '.claude\settings.json',
+            'shared\scripts\snapshot.sh',
+            'shared\scripts\new-project.sh',
+            'shared\scripts\install-skills.sh',
+            'shared\docs\adr\0001-folder-structure.md',
+            'obsidian-vault\00-memoria\MEMORY.md',
+            'obsidian-vault\04-contexto\user-profile.md',
+            'infra\terraform\main.tf',
+            'infra\cloudformation\stack-s3-bucket.yaml',
+            'projects\.gitkeep',
+            'archive\.gitkeep'
+          )
+          $missing = @()
+          foreach ($f in $expected) {
+            $p = Join-Path $ws $f
+            if (Test-Path $p) {
+              Write-Host "OK   $f"
+            } else {
+              Write-Host "MISS $f"
+              $missing += $f
+            }
+          }
+          if ($missing.Count -gt 0) { throw "Faltan archivos: $($missing -join ', ')" }
+
+      - name: Verify CLAUDE.md placeholders replaced
+        shell: pwsh
+        run: |
+          $claude = Get-Content "$env:RUNNER_TEMP\test-workspace\CLAUDE.md" -Raw
+          if ($claude -match '\{\{[A-Z]+\}\}') {
+            throw "CLAUDE.md tiene placeholders sin reemplazar: $($Matches[0])"
+          }
+          if ($claude -notmatch 'CI Tester')   { throw 'CLAUDE.md no contiene UserName' }
+          if ($claude -notmatch 'ci@test.com') { throw 'CLAUDE.md no contiene Email' }
+          Write-Host 'OK placeholders correctamente reemplazados'
+
+      - name: Run verify.ps1
+        shell: pwsh
+        run: |
+          .\verify.ps1
+          # verify.ps1 no exitea con error code; basta con que no tire excepcion
+
+  # ---------------------------------------------------------------------------
+  # Test install on macOS
+  # ---------------------------------------------------------------------------
+  test-macos:
+    name: Test install (macos)
+    runs-on: macos-latest
+    needs: lint
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make scripts executable
+        run: chmod +x install.sh bootstrap.sh
+
+      - name: Run install.sh in express mode
+        run: |
+          ws="$RUNNER_TEMP/test-workspace"
+          ./install.sh --express \
+            --workspace "$ws" \
+            --name 'CI Tester' \
+            --company 'CI' \
+            --email 'ci@test.com' \
+            --no-vscode \
+            --no-iac \
+            --skip-login
+
+      - name: Verify workspace structure
+        run: |
+          ws="$RUNNER_TEMP/test-workspace"
+          expected=(
+            'CLAUDE.md'
+            'README.md'
+            '.claude/settings.json'
+            'shared/scripts/snapshot.sh'
+            'shared/scripts/new-project.sh'
+            'shared/scripts/install-skills.sh'
+            'shared/docs/adr/0001-folder-structure.md'
+            'obsidian-vault/00-memoria/MEMORY.md'
+            'infra/terraform/main.tf'
+            'infra/cloudformation/stack-s3-bucket.yaml'
+          )
+          fail=0
+          for f in "${expected[@]}"; do
+            if [[ -e "$ws/$f" ]]; then
+              echo "OK   $f"
+            else
+              echo "MISS $f"
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - name: Verify CLAUDE.md placeholders replaced
+        run: |
+          ws="$RUNNER_TEMP/test-workspace"
+          if grep -E '\{\{[A-Z]+\}\}' "$ws/CLAUDE.md"; then
+            echo "::error::CLAUDE.md tiene placeholders sin reemplazar"
+            exit 1
+          fi
+          grep -q 'CI Tester'   "$ws/CLAUDE.md" || { echo 'no UserName'; exit 1; }
+          grep -q 'ci@test.com' "$ws/CLAUDE.md" || { echo 'no Email'; exit 1; }
+          echo 'OK placeholders'

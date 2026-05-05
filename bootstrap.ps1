@@ -8,11 +8,24 @@
 
     Descarga el ZIP del repo, lo descomprime en %TEMP% y lanza install.ps1.
     Ese script (a su vez) instala runtimes, copia scaffold y personaliza CLAUDE.md.
+
+    Para pasar params (ej. modo Express) via irm | iex:
+      & ([scriptblock]::Create((irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1))) -Express -UserName "Juan" -Email "j@x.com"
 .NOTES
     Autor:   Adrian Garzon - FourG Solutions
     Email:   four4gsolutions@gmail.com
-    Version: 1.0.0
+    Version: 1.1.0
 #>
+param(
+    [switch]$Express,
+    [string]$Workspace = '',
+    [string]$UserName  = '',
+    [string]$Company   = '',
+    [string]$Email     = '',
+    [Nullable[bool]]$VSCode    = $null,
+    [Nullable[bool]]$IaC       = $null,
+    [switch]$SkipLogin
+)
 
 $ErrorActionPreference = 'Stop'
 
@@ -22,15 +35,19 @@ Write-Host '  FourG Claude Code Bootcamp - Bootstrap' -ForegroundColor Cyan
 Write-Host '============================================================' -ForegroundColor Cyan
 Write-Host ''
 
-# 1. Admin check
-$current   = [Security.Principal.WindowsIdentity]::GetCurrent()
-$principal = New-Object Security.Principal.WindowsPrincipal($current)
-if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
-    Write-Host '  XX  Necesitas PowerShell como Administrador.' -ForegroundColor Red
-    Write-Host '      Cerra esta ventana, abri PowerShell con boton derecho > "Ejecutar como administrador" y volve a correr.' -ForegroundColor Gray
-    exit 1
+# 1. Admin check (skip en CI)
+if ($env:CI) {
+    Write-Host '  OK  CI detectado - skip admin check' -ForegroundColor Green
+} else {
+    $current   = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($current)
+    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+        Write-Host '  XX  Necesitas PowerShell como Administrador.' -ForegroundColor Red
+        Write-Host '      Cerra esta ventana, abri PowerShell con boton derecho > "Ejecutar como administrador" y volve a correr.' -ForegroundColor Gray
+        exit 1
+    }
+    Write-Host '  OK  Corriendo como Administrador' -ForegroundColor Green
 }
-Write-Host '  OK  Corriendo como Administrador' -ForegroundColor Green
 
 # 2. ExecutionPolicy temporal en el scope del proceso
 try {
@@ -83,12 +100,23 @@ if (-not (Test-Path $installer)) {
 }
 
 Write-Host ''
-Write-Host '==> Lanzando install.ps1 (preguntara workspace, nombre, etc.)' -ForegroundColor Cyan
+Write-Host '==> Lanzando install.ps1' -ForegroundColor Cyan
 Write-Host ''
+
+# Forward los params recibidos al installer
+$installerArgs = @{}
+if ($Express)            { $installerArgs.Express   = $true }
+if ($Workspace)          { $installerArgs.Workspace = $Workspace }
+if ($UserName)           { $installerArgs.UserName  = $UserName }
+if ($Company)            { $installerArgs.Company   = $Company }
+if ($Email)              { $installerArgs.Email     = $Email }
+if ($null -ne $VSCode)   { $installerArgs.VSCode    = $VSCode }
+if ($null -ne $IaC)      { $installerArgs.IaC       = $IaC }
+if ($SkipLogin)          { $installerArgs.SkipLogin = $true }
 
 Push-Location $kitDir
 try {
-    & $installer
+    & $installer @installerArgs
 } finally {
     Pop-Location
 }

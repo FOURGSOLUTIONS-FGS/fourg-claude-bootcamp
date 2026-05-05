@@ -20,6 +20,9 @@ desktop.ini
 *.swp
 *~
 
+# Claude Code: settings personales no se versionan
+.claude/settings.local.json
+
 # Assets pesados (deberían vivir en shared/assets/, no en repos)
 *.psd
 *.ai

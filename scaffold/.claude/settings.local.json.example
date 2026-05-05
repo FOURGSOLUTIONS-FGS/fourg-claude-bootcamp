@@ -1,0 +1,14 @@
+{
+  "// Este archivo NO se commitea (esta en .gitignore como settings.local.json).": "",
+  "// Copiar a settings.local.json y editar con tus permisos personales.": "",
+  "// Sobrescribe lo que esta en settings.json (el versionado).": "",
+
+  "permissions": {
+    "allow": [
+      "// agrega aca permisos extra que quieras solo en TU maquina, ej:",
+      "// Bash(docker:*)",
+      "// Bash(make:*)",
+      "// WebFetch(domain:tu-empresa.com)"
+    ]
+  }
+}
