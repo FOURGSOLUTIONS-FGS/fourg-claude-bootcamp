@@ -1,0 +1,15 @@
+# Copiar este archivo a `terraform.tfvars` y editar.
+# `terraform.tfvars` está en .gitignore — no se commitea.
+
+project     = "mi-primer-proyecto"
+environment = "dev"
+region      = "us-east-1"
+
+# Opcional: sufijo fijo para el bucket (si vacío, se genera random)
+# bucket_suffix = "abc1"
+
+# Opcional: tags adicionales a aplicar a todos los recursos
+tags = {
+  Owner = "tu-nombre"
+  Cost  = "personal"
+}

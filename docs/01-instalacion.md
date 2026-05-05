@@ -25,7 +25,7 @@ Guía paso a paso para correr el bootcamp en una máquina Windows nueva.
 
 2. Pegar y enter:
    ```powershell
-   irm https://raw.githubusercontent.com/Adriangar333/fourg-claude-bootcamp/main/install.ps1 | iex
+   irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/install.ps1 | iex
    ```
 
 3. Responder las preguntas:
@@ -50,7 +50,7 @@ Si todavía no está publicado el repo o querés correrlo offline:
 1. Clonar (o descomprimir el ZIP que te pasaron) en cualquier carpeta:
    ```powershell
    cd C:\Users\Tu\Downloads
-   git clone https://github.com/Adriangar333/fourg-claude-bootcamp.git
+   git clone https://github.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp.git
    cd fourg-claude-bootcamp
    ```
 

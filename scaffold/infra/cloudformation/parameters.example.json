@@ -1,0 +1,5 @@
+[
+  { "ParameterKey": "ProjectName", "ParameterValue": "mi-primer-proyecto" },
+  { "ParameterKey": "Environment", "ParameterValue": "dev" },
+  { "ParameterKey": "Owner",       "ParameterValue": "tu-nombre" }
+]

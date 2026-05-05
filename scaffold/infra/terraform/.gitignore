@@ -1,0 +1,31 @@
+# State files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Variables con secretos o valores por usuario (NO commitear)
+*.tfvars
+*.tfvars.json
+# Excepción: el ejemplo sí se commitea
+!*.tfvars.example
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Plan files
+*.tfplan
+
+# CLI configs
+.terraformrc
+terraform.rc
+
+# Workspaces directory (descargas de providers, modules)
+.terraform/
+.terraform.lock.hcl

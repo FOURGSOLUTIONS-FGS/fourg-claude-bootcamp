@@ -1,0 +1,8 @@
+# Parametros con valores reales (cada usuario tiene los suyos)
+parameters.json
+# Excepción: el ejemplo sí se commitea
+!parameters.example.json
+
+# Outputs y tmp
+*.tmp
+outputs.json

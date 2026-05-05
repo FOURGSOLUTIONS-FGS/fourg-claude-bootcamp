@@ -158,12 +158,14 @@ $userName  = Read-Default 'Tu nombre completo' 'Mi Nombre'
 $company   = Read-Default 'Tu empresa o marca personal' 'Mi Empresa'
 $email     = Read-Default 'Tu email' 'mi@email.com'
 $installVS = Read-YesNo  'Instalar VS Code?' $true
+$installIaC = Read-YesNo 'Instalar Terraform + AWS CLI (modulo Infrastructure as Code)?' $false
 
 Write-Host ''
 Write-Info "Workspace : $workspace"
 Write-Info "Usuario   : $userName ($email)"
 Write-Info "Empresa   : $company"
 Write-Info "VS Code   : $(if ($installVS) { 'si' } else { 'no' })"
+Write-Info "IaC       : $(if ($installIaC) { 'si (Terraform + AWS CLI)' } else { 'no (lo podes instalar despues)' })"
 Write-Host ''
 if (-not (Read-YesNo 'Confirmar y continuar?' $true)) {
     Write-Warn 'Cancelado por el usuario.'
@@ -180,6 +182,10 @@ $ok = (Install-WithWinget -Id 'Python.Python.3.12' -DisplayName 'Python 3.12')  
 $ok = (Install-WithWinget -Id 'Git.Git'            -DisplayName 'Git for Windows') -and $ok
 if ($installVS) {
     $ok = (Install-WithWinget -Id 'Microsoft.VisualStudioCode' -DisplayName 'Visual Studio Code') -and $ok
+}
+if ($installIaC) {
+    $ok = (Install-WithWinget -Id 'HashiCorp.Terraform' -DisplayName 'Terraform') -and $ok
+    $ok = (Install-WithWinget -Id 'Amazon.AWSCLI'      -DisplayName 'AWS CLI v2')  -and $ok
 }
 
 if (-not $ok) {
@@ -268,6 +274,13 @@ Write-Host 'Proximos pasos:' -ForegroundColor Cyan
 Write-Host "  1. cd $workspace"
 Write-Host '  2. claude            # arrancar Claude Code'
 Write-Host '  3. Leer docs/01-instalacion.md y docs/02-primer-proyecto.md del kit'
+if ($installIaC) {
+    Write-Host ''
+    Write-Host 'IaC instalado:' -ForegroundColor Cyan
+    Write-Host '  - Templates Terraform y CloudFormation en `scaffold/infra/`'
+    Write-Host '  - Configura credenciales AWS:  aws configure'
+    Write-Host '  - Doc: docs/06-iac-terraform-cloudformation.md'
+}
 Write-Host ''
 Write-Host 'Soporte: four4gsolutions@gmail.com' -ForegroundColor DarkGray
 Write-Host ''

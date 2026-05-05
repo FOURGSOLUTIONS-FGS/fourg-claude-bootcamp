@@ -16,6 +16,7 @@ Una sola corrida de `install.ps1` deja al alumno con:
 4. **`CLAUDE.md` personalizado** con su nombre, empresa y email — Claude Code lo lee automáticamente al arrancar en el directorio.
 5. **Scripts utilitarios** — `snapshot.sh`, `new-project.sh`, `scratch-clean.sh` listos en `shared/scripts/`.
 6. **Skills recomendadas** documentadas (no se instalan auto, las elige el alumno).
+7. **Módulo IaC opcional** — templates Terraform + CloudFormation (S3 privado/versionado/encriptado) listos para `terraform apply` o `aws cloudformation deploy`. Si elegís "instalar IaC", también agrega Terraform CLI + AWS CLI. Ver [`docs/06-iac-terraform-cloudformation.md`](docs/06-iac-terraform-cloudformation.md).
 
 ---
 
@@ -38,7 +39,7 @@ Una sola corrida de `install.ps1` deja al alumno con:
 Abrir PowerShell **como Administrador** y correr:
 
 ```powershell
-irm https://raw.githubusercontent.com/Adriangar333/fourg-claude-bootcamp/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/install.ps1 | iex
 ```
 
 > Si todavía no está publicado el repo: cloná y corré local — ver `docs/01-instalacion.md`.
@@ -47,6 +48,7 @@ El instalador te pregunta:
 - Dónde querés crear el workspace (default: `C:\TRABAJOS\`).
 - Tu nombre, empresa y email para personalizar el `CLAUDE.md`.
 - Si querés VS Code (sí/no).
+- Si querés el módulo IaC: Terraform + AWS CLI (sí/no, default no).
 
 Después de ~5 minutos ya podés correr `claude` en tu workspace.
 
@@ -67,13 +69,15 @@ fourg-claude-bootcamp/
 │   │   ├── scripts/           ← snapshot, new-project, scratch-clean
 │   │   └── docs/adr/          ← ADRs del workspace
 │   ├── archive/               ← snapshots por fecha
-│   └── obsidian-vault/        ← cerebro persistente (Obsidian opcional)
+│   ├── obsidian-vault/        ← cerebro persistente (Obsidian opcional)
+│   └── infra/                 ← Terraform + CloudFormation templates (S3 ejemplo)
 ├── docs/
 │   ├── 01-instalacion.md
 │   ├── 02-primer-proyecto.md
 │   ├── 03-convenciones.md
 │   ├── 04-skills-recomendadas.md
-│   └── 05-troubleshooting.md
+│   ├── 05-troubleshooting.md
+│   └── 06-iac-terraform-cloudformation.md
 └── prompts/
     ├── kickoff-clase.md       ← prompt que le pasás al alumno día 1
     └── personalizar-claude-md.md
@@ -93,5 +97,5 @@ MIT — usá, forkeá, adaptá. Solo mantené el crédito a FourG Solutions en e
 
 ## Soporte
 
-Issues en GitHub: [Adriangar333/fourg-claude-bootcamp](https://github.com/Adriangar333/fourg-claude-bootcamp/issues)
+Issues en GitHub: [FOURGSOLUTIONS-FGS/fourg-claude-bootcamp](https://github.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/issues)
 Email: `four4gsolutions@gmail.com`

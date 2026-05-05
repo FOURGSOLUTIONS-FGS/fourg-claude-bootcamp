@@ -169,5 +169,5 @@ Si necesitás correr esto en macOS hoy:
 ## Soporte
 
 Si nada de esto resuelve tu problema:
-- Issues: [github.com/Adriangar333/fourg-claude-bootcamp/issues](https://github.com/Adriangar333/fourg-claude-bootcamp/issues)
+- Issues: [github.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/issues](https://github.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/issues)
 - Email: `four4gsolutions@gmail.com`
