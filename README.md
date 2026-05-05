@@ -39,10 +39,10 @@ Una sola corrida de `install.ps1` deja al alumno con:
 Abrir PowerShell **como Administrador** y correr:
 
 ```powershell
-irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1 | iex
 ```
 
-> Si todavía no está publicado el repo: cloná y corré local — ver `docs/01-instalacion.md`.
+> El `bootstrap.ps1` descarga el ZIP del repo a `%TEMP%` y lanza `install.ps1` localmente (necesario para que el scaffold se copie al workspace).
 
 El instalador te pregunta:
 - Dónde querés crear el workspace (default: `C:\TRABAJOS\`).

@@ -18,20 +18,21 @@ Guía paso a paso para correr el bootcamp en una máquina Windows nueva.
 
 ## Opción A — Instalación 1-comando (recomendada)
 
-> Cuando el repo esté publicado en GitHub.
-
 1. Abrir **PowerShell como Administrador**:
    - Tecla Windows → escribir "powershell" → click derecho → "Ejecutar como administrador".
 
 2. Pegar y enter:
    ```powershell
-   irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/install.ps1 | iex
+   irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1 | iex
    ```
+
+   `bootstrap.ps1` descarga el ZIP del repo a `%TEMP%` y lanza `install.ps1` desde ahí (`install.ps1` necesita la carpeta `scaffold/` local, por eso no se ejecuta directo via `iex`).
 
 3. Responder las preguntas:
    - Dónde crear el workspace (default `C:\TRABAJOS\`)
    - Nombre, empresa y email
    - Si querés VS Code
+   - Si querés Terraform + AWS CLI
 
 4. Esperar ~5 minutos.
 
