@@ -1,0 +1,10 @@
+# projects/ — un subdirectorio por repo
+
+Acá viven todos los repos clonados o proyectos nuevos.
+
+Para crear uno nuevo:
+```
+./shared/scripts/new-project.sh mi-proyecto
+# o clonar uno existente:
+cd projects && git clone https://github.com/usuario/repo.git
+```

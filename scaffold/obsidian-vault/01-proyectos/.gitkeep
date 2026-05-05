@@ -1,0 +1,39 @@
+# 01-proyectos/
+
+Un `.md` por proyecto activo, con su estado actual + siguiente paso.
+
+Estructura sugerida de cada nota:
+
+```markdown
+---
+tipo: proyecto
+nombre: mi-proyecto
+estado: activo | pausado | archivado
+ultimo_update: YYYY-MM-DD
+tags: [proyecto, tecnologia-x]
+---
+
+# mi-proyecto
+
+## Qué es
+
+(1-2 párrafos: qué hace el proyecto, para quién, por qué existe)
+
+## Estado actual
+
+(qué se hizo último, qué está funcionando, qué está roto)
+
+## Siguiente paso
+
+(la próxima acción concreta)
+
+## Stack
+
+- (frontend, backend, deploy)
+
+## URLs
+
+- Repo: github.com/usuario/repo
+- Prod: https://...
+- Staging: https://...
+```

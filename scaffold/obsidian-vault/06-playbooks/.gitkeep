@@ -1,0 +1,9 @@
+# 06-playbooks/
+
+Guías técnicas reutilizables (patrones) que NO son skills invocables.
+
+Diferencia con `05-skills/`:
+- **Skill:** la invoca Claude Code automáticamente cuando matchea el trigger.
+- **Playbook:** lo lee Claude solo si vos se lo pedís, o lo lee un humano.
+
+Ejemplo: `nextjs-deploy-vercel.md`, `forensic-disk-imaging.md`.

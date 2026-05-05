@@ -1,0 +1,81 @@
+# CLAUDE.md — Workspace de {{NOMBRE}}
+
+Instrucciones para cualquier sesión de Claude Code que trabaje en este workspace.
+
+> Generado por **FourG Claude Code Bootcamp** el {{FECHA}}.
+> Personalizalo a tu gusto — esto es solo el punto de partida.
+
+## Quién soy
+
+**{{NOMBRE}}** — {{EMPRESA}}.
+Email: `{{EMAIL}}`.
+Workspace: este directorio. Hablo en español, prefiero respuestas directas.
+
+## Reglas globales (no romper nunca)
+
+1. **Identidad por defecto** en cualquier herramienta nueva o entregable: nombre = `{{NOMBRE}}`, empresa = `{{EMPRESA}}`, email = `{{EMAIL}}`.
+2. **Encoding de archivos PowerShell:** TODOS los `.ps1` que contengan caracteres no-ASCII (¿áéíóúñ¡) DEBEN guardarse con **UTF-8 BOM**. PowerShell 5.1 nativo de Windows lee archivos sin BOM como CP1252 → mojibake (`Â¿`, `Ã©`). Después de cualquier `Edit`/`Write` en `.ps1`, re-aplicar BOM con:
+   ```powershell
+   [System.IO.File]::WriteAllText($f, [System.IO.File]::ReadAllText($f), [System.Text.UTF8Encoding]::new($true))
+   ```
+3. **No subir secretos a git.** Usar `.env.local` (en `.gitignore`) para tokens, API keys, credenciales.
+
+## Reglas de estructura (ver [ADR-0001](shared/docs/adr/0001-folder-structure.md))
+
+La raíz de este workspace solo debe contener: `projects/`, `shared/`, `archive/`, `obsidian-vault/`, `README.md`, `CLAUDE.md`. Cualquier otra cosa está fuera de lugar.
+
+- **Código / repos** → `projects/<nombre-repo>/`. Clonar siempre con `cd projects && git clone <url>`.
+- **Assets pesados** (videos, imágenes grandes, PSDs) → `shared/assets/<proyecto>/<tipo>/`. NUNCA dentro del repo de git.
+- **Docs transversales** → `shared/docs/`. ADRs en `shared/docs/adr/NNNN-titulo.md`.
+- **WIP suelto** (un `.patch`, un componente aislado, experimentos) → `shared/scratch/`. Revisar mensual y limpiar.
+- **Snapshots / backups** → `archive/YYYY-MM-DD/`. Crear con `shared/scripts/snapshot.sh <proyecto>`.
+
+## Convenciones
+
+- **Nombres de carpeta:** kebab-case (`mi-sitio-web`, no `MiSitioWeb`).
+- **Fechas en rutas y archivos:** `YYYY-MM-DD` siempre (ISO, ordena lexicográficamente).
+- **ADRs:** numeración de 4 dígitos (`0001-`, `0002-`). Status: Proposed → Accepted → Deprecated/Superseded.
+- **Commits:** inglés para commits técnicos, español para docs/notas internas (o como prefieras).
+
+## Cómo quiero que colabores conmigo
+
+- Ir al grano. Ejecutar rápido, valorar momentum sobre largas explicaciones.
+- Si la tarea tiene >3 pasos, usar TodoList para mostrar progreso.
+- Antes de reorganizar cosas grandes, confirmar con preguntas concretas (opciones, no abiertas).
+- Para decisiones de arquitectura, crear ADR en `shared/docs/adr/` — no solo explicar en chat.
+- Al terminar, dar links clicables a los archivos creados. Resúmenes cortos.
+
+## Scripts útiles (`shared/scripts/`)
+
+- `./shared/scripts/snapshot.sh <proyecto>` — crea `archive/YYYY-MM-DD/<proyecto>-snapshot.zip`
+- `./shared/scripts/new-project.sh <nombre> [url-git]` — scaffold de nuevo proyecto en `projects/`
+- `./shared/scripts/scratch-clean.sh` — lista archivos de `shared/scratch/` > 30 días
+
+## Memoria persistente — LEER AL INICIAR
+
+**Fuente primaria de contexto entre sesiones:** el vault de Obsidian en `obsidian-vault/`.
+
+Al iniciar **cualquier tarea no trivial** (más de un turno, cualquier cosa con archivos o deploy, cualquier proyecto nombrado), la primera acción debe ser:
+
+1. Leer `obsidian-vault/00-memoria/MEMORY.md` — MOC (Map of Content) maestro con índice completo de proyectos, contexto, stack, referencias y skills. Red de `[[wikilinks]]`.
+2. Desde el MOC, abrir sólo las notas relevantes a la tarea (p. ej. `01-proyectos/<proyecto>.md`).
+3. Al cerrar sesión / pivotear tarea: agregar entrada al daily `obsidian-vault/02-daily/YYYY-MM-DD.md` con lo hecho + pendientes.
+
+El vault es **fuente de verdad compartida** — yo también escribo ahí desde Obsidian (https://obsidian.md, gratis).
+
+## Stack preferido
+
+> Editá esta sección con TU stack real. El default es solo sugerencia.
+
+- **Frontend:** Next.js 14+ (App Router), TypeScript, Tailwind CSS.
+- **Backend:** Node + Postgres, o Python + FastAPI (depende del proyecto).
+- **Deploy:** Vercel para frontends, VPS Docker para backends.
+
+## Notas adicionales
+
+(Agregá acá cualquier regla, contexto o guía propia que quieras que Claude conozca al iniciar)
+
+---
+
+> Este `CLAUDE.md` es la fuente de verdad para Claude Code en este workspace. Editalo libremente — Claude lo lee automáticamente al arrancar.
+> Si querés inspiración, mirá ejemplos en https://github.com/anthropics/claude-code

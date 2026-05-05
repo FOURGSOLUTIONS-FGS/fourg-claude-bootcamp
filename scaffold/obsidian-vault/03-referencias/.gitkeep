@@ -1,0 +1,10 @@
+# 03-referencias/
+
+Notas sobre sistemas externos: GitHub, Vercel, Cloudflare, APIs, etc.
+
+NO guardar secretos acá (usar `.env.local` en la raíz del workspace).
+
+Ejemplos sugeridos:
+- `github.md` — usuario, repos, configuración
+- `vercel.md` — proyectos deployados, dominios
+- `dominios.md` — dominios comprados, registrar, DNS

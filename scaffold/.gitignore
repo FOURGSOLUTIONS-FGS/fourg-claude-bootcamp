@@ -1,0 +1,38 @@
+# Workspace-level gitignore
+# (cada proyecto en projects/ tendrá su propio .gitignore adicional)
+
+# Secretos y env
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+.auto-memory/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Assets pesados (deberían vivir en shared/assets/, no en repos)
+*.psd
+*.ai
+*.sketch
+
+# Snapshots y backups (van a archive/, no se versionan)
+archive/
+
+# Scratch
+shared/scratch/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

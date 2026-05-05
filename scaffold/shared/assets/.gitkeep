@@ -1,0 +1,15 @@
+# shared/assets/<proyecto>/
+
+Assets pesados (imágenes, videos, PSDs) específicos de cada proyecto.
+NO van dentro del repo de git del proyecto — viven acá afuera, namespaced por proyecto.
+
+Estructura sugerida:
+```
+shared/assets/
+├── mi-sitio/
+│   ├── brand/      (logos, paletas)
+│   ├── video/      (mp4, mov)
+│   └── images/     (jpg, png originales)
+└── otro-proyecto/
+    └── ...
+```

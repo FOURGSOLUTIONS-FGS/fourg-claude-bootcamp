@@ -1,0 +1,30 @@
+# 02-daily/
+
+Log diario. Un `.md` por día con formato `YYYY-MM-DD.md`.
+
+Mensualmente, mover a subcarpeta `02-daily/YYYY-MM/`.
+
+Plantilla de daily:
+
+```markdown
+---
+tipo: daily
+fecha: YYYY-MM-DD
+tags: [daily]
+---
+
+# YYYY-MM-DD
+
+## Hecho
+
+- (item 1)
+- (item 2)
+
+## Pendiente para mañana
+
+- (item 1)
+
+## Notas / aprendizajes
+
+- (algo que descubrí, un gotcha, una idea suelta)
+```

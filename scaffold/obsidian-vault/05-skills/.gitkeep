@@ -1,0 +1,21 @@
+# 05-skills/
+
+Fuente de skills custom para Claude Code.
+
+Una skill es una carpeta o archivo con frontmatter:
+
+```markdown
+---
+name: mi-skill
+description: Qué hace y cuándo invocarla (triggers en lenguaje natural)
+---
+
+# Cuerpo de la skill: instrucciones detalladas
+```
+
+Para instalarla globalmente: copiar a `~/.claude/skills/<nombre>/SKILL.md`.
+
+Skills recomendadas para empezar (instalar manualmente):
+- **find-skills** — descubre e instala skills del ecosystem (`npx skills find <query>`)
+- **polish** — review final de UI/UX
+- Catálogo completo: [skills.sh](https://skills.sh)

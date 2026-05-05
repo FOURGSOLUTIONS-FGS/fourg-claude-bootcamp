@@ -1,0 +1,13 @@
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# El scaffold/.gitignore se versiona (es parte del template),
+# pero NO debemos versionar el scaffold/archive/ ni scaffold/shared/scratch/
+# si llegaran a tener contenido — están en el .gitignore del scaffold mismo.
