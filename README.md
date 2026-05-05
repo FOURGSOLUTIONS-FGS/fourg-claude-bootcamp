@@ -70,10 +70,15 @@ Después de ~5 minutos ya podés correr `claude` en tu workspace.
 
 Para CI o instalaciones masivas — todos los defaults sin interactividad:
 
-**Windows:**
+**Windows:** setear variables de entorno antes de correr el bootstrap (porque `irm | iex` no acepta `param()`):
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1))) -Express -UserName "Tu Nombre" -Email "tu@mail.com"
+$env:FGB_EXPRESS = '1'
+$env:FGB_NAME    = 'Tu Nombre'
+$env:FGB_EMAIL   = 'tu@mail.com'
+irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1 | iex
 ```
+
+Vars soportadas: `FGB_EXPRESS`, `FGB_WORKSPACE`, `FGB_NAME`, `FGB_COMPANY`, `FGB_EMAIL`, `FGB_VSCODE`, `FGB_IAC`, `FGB_SKIP_LOGIN`.
 
 **macOS / Linux:**
 ```bash

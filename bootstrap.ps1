@@ -3,31 +3,47 @@
 .SYNOPSIS
     FourG Claude Code Bootcamp - Bootstrap remoto (irm | iex)
 .DESCRIPTION
-    Ejecuta directo desde GitHub:
+    Ejecuta directo desde GitHub (modo interactivo):
       irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1 | iex
 
     Descarga el ZIP del repo, lo descomprime en %TEMP% y lanza install.ps1.
     Ese script (a su vez) instala runtimes, copia scaffold y personaliza CLAUDE.md.
 
-    Para pasar params (ej. modo Express) via irm | iex:
-      & ([scriptblock]::Create((irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1))) -Express -UserName "Juan" -Email "j@x.com"
+    Modo Express (desatendido) — setear variables de entorno ANTES:
+      $env:FGB_EXPRESS = '1'
+      $env:FGB_NAME    = 'Juan Perez'
+      $env:FGB_EMAIL   = 'juan@jp.com'
+      irm https://raw.githubusercontent.com/FOURGSOLUTIONS-FGS/fourg-claude-bootcamp/main/bootstrap.ps1 | iex
+
+    Variables de entorno soportadas:
+      FGB_EXPRESS      '1' o 'true' para modo desatendido
+      FGB_WORKSPACE    Path del workspace (default: C:\TRABAJOS)
+      FGB_NAME         Nombre del usuario
+      FGB_COMPANY      Empresa o marca
+      FGB_EMAIL        Email
+      FGB_VSCODE       '1' o '0' para instalar/saltar VS Code
+      FGB_IAC          '1' o '0' para instalar/saltar Terraform + AWS CLI
+      FGB_SKIP_LOGIN   '1' para no lanzar `claude` al final
 .NOTES
     Autor:   Adrian Garzon - FourG Solutions
     Email:   four4gsolutions@gmail.com
-    Version: 1.1.0
+    Version: 1.1.1
 #>
-param(
-    [switch]$Express,
-    [string]$Workspace = '',
-    [string]$UserName  = '',
-    [string]$Company   = '',
-    [string]$Email     = '',
-    [Nullable[bool]]$VSCode    = $null,
-    [Nullable[bool]]$IaC       = $null,
-    [switch]$SkipLogin
-)
+
+# Nota: NO usamos param() porque rompe `irm | iex` (Invoke-Expression no
+# procesa bloques param). Los argumentos se reciben via env vars FGB_*.
 
 $ErrorActionPreference = 'Stop'
+
+# Mapear env vars FGB_* a variables locales
+$Express   = ($env:FGB_EXPRESS    -in @('1','true','True','TRUE','yes','y'))
+$Workspace = if ($env:FGB_WORKSPACE) { $env:FGB_WORKSPACE } else { '' }
+$UserName  = if ($env:FGB_NAME)      { $env:FGB_NAME }      else { '' }
+$Company   = if ($env:FGB_COMPANY)   { $env:FGB_COMPANY }   else { '' }
+$Email     = if ($env:FGB_EMAIL)     { $env:FGB_EMAIL }     else { '' }
+$VSCode    = switch ($env:FGB_VSCODE)    { '1' { $true } '0' { $false } default { $null } }
+$IaC       = switch ($env:FGB_IAC)       { '1' { $true } '0' { $false } default { $null } }
+$SkipLogin = ($env:FGB_SKIP_LOGIN -in @('1','true','True'))
 
 Write-Host ''
 Write-Host '============================================================' -ForegroundColor Cyan
